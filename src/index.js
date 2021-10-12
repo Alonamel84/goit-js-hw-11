@@ -3,6 +3,7 @@ import makeImageMarkup from './templates.hbs';
 import axios from 'axios';
 import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const imgNode = document.querySelector('.gallery');
 const urlRoute = 'https://pixabay.com/api/';
@@ -12,6 +13,12 @@ const filterName = `${urlRoute}?${key}&image_type=photo`;
 const submitNode = document.querySelector('#search-form');
 const inputNode = document.querySelector('input');
 const loadMoreBtn = document.querySelector('.load-more-btn');
+const lightbox = new SimpleLightbox('.gallery a', {
+  /* options */
+  captions: true,
+  captionDelay: 250,
+  captionsData: 'alt',
+});
 
 submitNode.addEventListener('submit', async e => {
   e.preventDefault();
@@ -67,6 +74,7 @@ const requestServer = async filterName => {
 const renderImages = ({ hits }) => {
   const markup = makeImageMarkup(hits);
   imgNode.insertAdjacentHTML('beforeend', markup);
+  lightbox.refresh();
 };
 let page = 1;
 const onNextPage = async e => {
@@ -83,11 +91,9 @@ const onNextPage = async e => {
 };
 loadMoreBtn.addEventListener('click', onNextPage);
 
-const lightbox = new SimpleLightbox('.photo-card a', {
-  /* options */
-  captions: true,
-  captionDelay: 250,
-  captionsData: 'alt',
+document.addEventListener('keydown', function (e) {
+  if (!instance && !instance.visible()) return false;
+  if (e.key === 'Escape') {
+    instance.close();
+  }
 });
-
-console.log(lightbox);
